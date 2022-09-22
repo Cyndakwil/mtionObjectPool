@@ -264,7 +264,6 @@ namespace Unity.FPS.Gameplay
             }
 
             // Self Destruct
-            print("hiding");
             this.gameObject.SetActive(false);
         }
 
