@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Unity.FPS.Game;
 using UnityEngine;
 
@@ -74,7 +75,13 @@ namespace Unity.FPS.Gameplay
 
             m_ProjectileBase.OnShoot += OnShoot;
 
-            Destroy(gameObject, MaxLifeTime);
+            StartCoroutine(Timeout());
+        }
+
+        IEnumerator Timeout()
+        {
+            yield return new WaitForSeconds(MaxLifeTime);
+            gameObject.SetActive(false);
         }
 
         new void OnShoot()
@@ -257,7 +264,8 @@ namespace Unity.FPS.Gameplay
             }
 
             // Self Destruct
-            Destroy(this.gameObject);
+            print("hiding");
+            this.gameObject.SetActive(false);
         }
 
         void OnDrawGizmosSelected()

@@ -163,11 +163,15 @@ namespace Unity.FPS.Game
 
         private Queue<Rigidbody> m_PhysicalAmmoPool;
 
+        private ObjectPool objPool;
+
         void Awake()
         {
             m_CurrentAmmo = MaxAmmo;
             m_CarriedPhysicalBullets = HasPhysicalBullets ? ClipSize : 0;
             m_LastMuzzlePosition = WeaponMuzzle.position;
+
+            objPool = GetComponent<ObjectPool>();
 
             m_ShootAudioSource = GetComponent<AudioSource>();
             DebugUtility.HandleErrorIfNullGetComponent<AudioSource, WeaponController>(m_ShootAudioSource, this,
@@ -447,9 +451,13 @@ namespace Unity.FPS.Game
             for (int i = 0; i < bulletsPerShotFinal; i++)
             {
                 Vector3 shotDirection = GetShotDirectionWithinSpread(WeaponMuzzle);
-                ProjectileBase newProjectile = Instantiate(ProjectilePrefab, WeaponMuzzle.position,
-                    Quaternion.LookRotation(shotDirection));
-                newProjectile.Shoot(this);
+                ProjectileBase newProjectile = objPool.GetPooledObject().GetComponent<ProjectileBase>();
+                if (newProjectile != null)
+                {
+                    newProjectile.transform.SetPositionAndRotation(WeaponMuzzle.position, Quaternion.LookRotation(shotDirection));
+                    newProjectile.gameObject.SetActive(true);
+                    newProjectile.Shoot(this);
+                }
             }
 
             // muzzle flash
